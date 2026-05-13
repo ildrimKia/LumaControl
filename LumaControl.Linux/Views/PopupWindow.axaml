@@ -1,0 +1,146 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LumaControl.ViewModels"
+        x:Class="LumaControl.Views.PopupWindow"
+        Title="LumaControl"
+        Width="340"
+        MinWidth="300"
+        MaxHeight="520"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        Topmost="True"
+        SystemDecorations="BorderOnly"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="#CC1E1E2E">
+
+    <Window.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#AAAAAA"/>
+            <Setter Property="Margin" Value="0,0,0,2"/>
+        </Style>
+        <Style Selector="TextBlock.display-name">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#EEEEEE"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+        <Style Selector="TextBlock.value">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+        </Style>
+        <Style Selector="Slider">
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="100"/>
+            <Setter Property="TickFrequency" Value="1"/>
+            <Setter Property="IsSnapToTickEnabled" Value="True"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Header -->
+        <Border Grid.Row="0"
+                Background="#2A2A3E"
+                Padding="16,10">
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Text="Display Controls"
+                           FontSize="15"
+                           FontWeight="Bold"
+                           Foreground="#EEEEEE"
+                           VerticalAlignment="Center"/>
+                <Button Grid.Column="1"
+                        Content="↺"
+                        FontSize="16"
+                        Padding="6,2"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="#AAAAAA"
+                        ToolTip.Tip="Refresh displays"
+                        Command="{Binding LoadDisplaysCommand}"/>
+            </Grid>
+        </Border>
+
+        <!-- Display list -->
+        <ScrollViewer Grid.Row="1" Padding="0">
+            <Panel>
+                <!-- Loading indicator -->
+                <StackPanel IsVisible="{Binding IsLoading}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="0,32"
+                            Spacing="12">
+                    <ProgressBar IsIndeterminate="True" Width="200"/>
+                    <TextBlock Text="Detecting displays…"
+                               HorizontalAlignment="Center"
+                               Foreground="#AAAAAA"/>
+                </StackPanel>
+
+                <!-- Status / error message -->
+                <TextBlock IsVisible="{Binding StatusMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                           Text="{Binding StatusMessage}"
+                           Foreground="#FF8888"
+                           TextWrapping="Wrap"
+                           Margin="16,16"/>
+
+                <!-- Display cards -->
+                <ItemsControl ItemsSource="{Binding Displays}"
+                              IsVisible="{Binding !IsLoading}"
+                              Margin="0">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:DisplayViewModel">
+                            <Border Margin="12,8,12,0"
+                                    Padding="14,12"
+                                    CornerRadius="8"
+                                    Background="#252535"
+                                    IsEnabled="{Binding !IsBusy}">
+                                <StackPanel Spacing="6">
+
+                                    <!-- Display name + busy indicator -->
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Classes="display-name" Text="{Binding Name}"/>
+                                        <ProgressBar Grid.Column="1"
+                                                     IsIndeterminate="True"
+                                                     Width="40" Height="4"
+                                                     VerticalAlignment="Center"
+                                                     IsVisible="{Binding IsBusy}"/>
+                                    </Grid>
+
+                                    <!-- Brightness row -->
+                                    <TextBlock Classes="label" Text="Brightness"/>
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <Slider Value="{Binding Brightness}"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Classes="value"
+                                                   Text="{Binding Brightness}"/>
+                                    </Grid>
+
+                                    <!-- Contrast row (DDC monitors only) -->
+                                    <TextBlock Classes="label" Text="Contrast"
+                                               IsVisible="{Binding HasContrast}"/>
+                                    <Grid ColumnDefinitions="*,Auto"
+                                          IsVisible="{Binding HasContrast}">
+                                        <Slider Value="{Binding Contrast}"/>
+                                        <TextBlock Grid.Column="1"
+                                                   Classes="value"
+                                                   Text="{Binding Contrast}"/>
+                                    </Grid>
+
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Panel>
+        </ScrollViewer>
+
+        <!-- Bottom padding -->
+        <Border Grid.Row="2" Height="12"/>
+
+    </Grid>
+
+</Window>

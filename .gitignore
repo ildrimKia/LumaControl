@@ -1,0 +1,35 @@
+# .NET build outputs
+bin/
+obj/
+out/
+
+# .NET local settings
+*.user
+*.suo
+.vs/
+.vscode/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Runtime
+*.log
+*.pid
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Publish output
+publish/
